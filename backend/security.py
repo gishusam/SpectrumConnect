@@ -49,7 +49,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 
 def check_user_role(required_role: str):
     def role_checker(current_user: models.User = Depends(get_current_user)):
-        if current_user.role != required_role:
+        if current_user.userType != required_role:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Access denied. {required_role} role required."

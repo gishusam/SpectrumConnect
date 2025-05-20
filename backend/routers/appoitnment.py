@@ -12,7 +12,7 @@ router = APIRouter(
 def create_appointment(appointment: schemas.AppointmentCreate, db:Session = Depends(database.get_db),
                        current_user = Depends(security.get_current_user)):
     
-    therapist = db.query(models.Therapist).filter(models.Therapist.id == appointment.therapist_id, models.User.role == "therapist").first()
+    therapist = db.query(models.Therapist).filter(models.Therapist.id == appointment.therapist_id, models.User.userType == "therapist").first()
     if not therapist:
         raise HTTPException(status_code=404, detail="Therapist not found")
     
@@ -68,3 +68,18 @@ def confirm_appointment(appointment_id: int,db: Session = Depends(database.get_d
     print(f"📩 Notification: Appointment {appointment_id} confirmed for user {appointment.user_id}")
 
     return appointment
+
+@router.get("/confirmed", response_model=list[schemas.AppointmentResponse])
+def view_confirmed_appointments(db: Session = Depends(database.get_db),
+                                current_user=Depends(security.get_current_user)):
+
+    appointments = db.query(models.Appointment).filter(
+        models.Appointment.user_id == current_user.id,
+        models.Appointment.status == "confirmed"
+    ).all()
+
+    if not appointments:
+        raise HTTPException(status_code=404, detail="No confirmed appointments found")
+
+    return appointments
+
