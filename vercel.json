@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "Backend/main.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "spectrumconnectapp-main/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "spectrumconnectapp-main/build"
+      }
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "Backend/main.py" },
+    { "src": "/(.*)", "dest": "spectrumconnectapp-main/build/$1" }
+  ]
+}
